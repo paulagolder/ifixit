@@ -1,0 +1,46 @@
+{# views/repair/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+
+
+{% block middle %}
+<div id="middle" >
+<div id="repairedit"  >
+<div>
+ <div class="heading  row" >
+ <div class="label">Edit Repair:</div>
+ <div class="title" > {{repair.name}}</div>
+ <div class="button  right"> <a class="button" href ="/" >{{'back'}} </a> </div>
+</div>
+<div id="mastercontainer">
+<div id="container">
+<div id="atext">Give some contact information</div>
+<div id="ashape" >
+<img src="{{ asset('images/bubble_2.png') }}" />
+</div>
+</div>
+<div id="containerr">
+<div id="atextr">
+<input type="text" id="fname" name="fname" placeholder="a name"><br>
+<input type="text" id="email" name="email" placeholder="an email">
+</div>
+<div id="ashaper" >
+<img src="{{ asset('images/bubble_2.png') }}" />
+</div>
+</div>
+<div id="containerfr">
+<div id="atextfr">
+ <button type="button">NEXT</button>
+</div>
+</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{# templates/main/overview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block middle %}
+<div class"row">
+<h1>Welcome to IFIXIT </h1>
+<h2>It is now : {{ date |date("m/d/Y") }}</h2>
+</div>
+
+{% for arepair in repairs  %}
+ <div class="row">
+ <a class="button" href = "/repair/edit/{{arepair.repairid}}" >{{ arepair.name }}</a>
+
+ </div>
+
+{% endfor %}
+
+
+ <div class="button  right"> <a class="button" href = "/repair/edit" >Post New Repair</a> </div>
+{% endblock %}

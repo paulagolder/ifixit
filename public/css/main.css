@@ -1,0 +1,434 @@
+
+body {
+  font-size : 12pt;
+  font-family : sans-serif;
+  background-color : #d3e8b3;
+}
+
+div.header {
+  font-size : 2em;
+  margin-bottom : 0.5em;
+}
+
+div.footer {
+  font-size : 1em;
+  font-style: italic;
+  margin-top : 1em;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 1em;
+}
+
+div.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+div.topheader.row div.button.right
+{
+  margin-left : auto;
+  width: unset;
+}
+
+
+div.topheader.row div.button
+{
+  width: unset;
+}
+
+div.heading
+{
+  background-color: #a1e697;
+  height: 2em;
+  font-size: 1.5em;
+  padding: 0.2em;
+}
+
+
+div.heading div.label {
+  color : green;
+  font-size : 1.2em;
+  padding-right : 0.25em;
+}
+
+div.heading.red div.label {
+  color : red;
+  font-size : 1.2em;
+  padding-right : 0.25em;
+}
+
+div.heading div.value
+{
+  color: black;
+  font-size: 1.2em;
+  padding-right: 0.5em;
+}
+
+
+div.subheading.row
+{
+  xbackground-color :#a1e697;
+  xheight :1em;
+  font-size: 0.8em;
+  padding:0.1em;
+}
+
+
+div.subheading.row div.label {
+  color : green;
+  xfont-size : 1.2em;
+  padding-right : 1em;
+}
+
+
+div.subheading.row div.text
+{
+  width: 12em;
+}
+
+
+div.subheading.row div.label.red
+{
+  color: red;
+}
+
+
+div.row div.indent
+{
+  padding-left : 2em;
+}
+
+div.row div.name
+{
+  xflex: 1 1 16em;
+}
+
+
+div.message
+{
+  background-color :#a1e697;
+  height :1em;
+  font-size: 0.5em;
+  padding:0.1em;
+  color: red;
+  width : 25em;
+}
+
+
+
+a:visited
+{
+  color: blue;
+}
+
+a.button {
+  background-color : white;
+  font-size : 1em;
+  line-height : 0.3em;
+  font-family : sans-serif;
+  display : inline-block;
+  vertical-align : middle;
+  margin-right : 0.625em;
+  border-radius : 0.3125em;
+  border : silver solid 1px;
+  padding : 0.5em;
+  color : black;
+  text-decoration : none;
+
+}
+
+
+
+div.button> a.button.small
+{
+  font-size : 0.8em;
+  border : pink solid 1px;
+  width: max-content;
+}
+
+ div.altbutton.row div.button
+ {
+   width: 10em;
+   margin-left: 1em;
+ }
+
+
+div.button.right {
+  margin-left : auto;
+}
+
+div.deletebutton.right {
+  margin-left : auto;
+}
+
+a.button.red
+{
+  color: red;
+}
+
+
+button.button {
+  background-color : white;
+  font-size : 1em;
+  line-height : 0.3em;
+  font-family : sans-serif;
+  display : inline-block;
+  vertical-align : middle;
+  xmargin-right : 0.625em;
+  border-radius : 0.3125em;
+  border : silver solid 1px;
+  padding : 0.5em;
+  color : black;
+  text-decoration : none;
+  cursor: pointer;
+}
+
+div.button {
+  background-color : white;
+  font-size : 1em;
+  line-height : 0.3em;
+  font-family : sans-serif;
+  display : inline-block;
+  vertical-align : middle;
+  xmargin-right : 0.625em;
+  border-radius : 0.3125em;
+  border : silver solid 1px;
+  padding : 0.5em;
+  color : black;
+  text-decoration : none;
+  cursor: pointer;
+}
+
+div.mypage
+{
+  height : calc(100% - 5em);
+}
+
+
+div.pagescroll
+{
+  overflow-y: auto;
+  height: 600px;
+}
+
+
+div.formmap div.form
+{
+  min-width : 25em;
+}
+
+
+div.form form div label.required
+{
+  width: 10em;
+  color: red;
+  display: inline-block;
+}
+
+div.form form div label
+{
+  width: 10em;
+  color: green;
+  display: inline-block;
+}
+
+div.header div.row
+{
+    font-style: italic;
+      color: black;
+      background-color: #9cd29c;
+    font-size: 1em;
+}
+
+div.header div.row div.checkbox
+{
+  width: 3em;
+}
+
+div.header div.row div.name
+{
+  width: 14em;
+}
+
+div.header div.row div.pd
+{
+
+  width: 5em;
+}
+
+div.header div.row div.wardid
+{
+
+  width: 4em;
+}
+
+div.header div.row div.roadgroupid
+{
+
+  width: 5em;
+}
+
+div.header div.row div.rgid
+{
+  width: 8em;
+}
+
+ div.menu div.row div.name
+ {
+   width: 19em;
+ }
+
+ div.menu div.row div.id
+ {
+   width: 4em;
+ }
+
+div.header div.row div.num
+{
+  width: 5em;
+  text-align: right;
+}
+
+div.header div.row div.bnum
+{
+  width: 20em;
+  text-align: right;
+}
+
+ div.row div.id
+ {
+   width: 3em;
+   text-align: left;
+ }
+
+  div.row div.bnum
+ {
+   width: 7em;
+   text-align: right;
+ }
+
+
+ div.row div.indent
+ {
+   margin-left:5em;
+ }
+
+div.header div.row div.text
+{
+  width: 18em;
+}
+
+div.header div.row div.button
+{
+  width: 5em;
+  margin-left: 1em;
+}
+
+
+div.subheading
+{
+  font-size: 1.1em;
+  background-color:  #9cd29c;
+
+}
+
+
+div.row div.rgid
+{
+  width: 8em;
+}
+
+
+div.row div.checkbox
+{
+  width: 3em;
+}
+
+div.subheading.row div.name
+{
+  width: 220px;
+}
+
+div.row div.name
+{
+  width: 220px;
+}
+
+div.row div.pd
+{
+
+  width: 5em;
+}
+
+div.row div.wardid
+{
+  width: 4em;
+}
+
+div.subheading.row div.rgid
+{
+  width: 130px;
+}
+
+div.row div.rgid
+{
+  width: 130px;
+}
+
+div.row div.roadgroupid
+{
+  width: 5em;
+}
+
+
+div.subheading.row div.num
+{
+  width: 60px;
+  text-align: right;
+}
+
+div.row div.num
+{
+  width: 60px;
+  text-align: right;
+}
+
+
+div.row div.text
+{
+  width: 40em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.row div.shorttext
+{
+  width: 10em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+div.row div.button
+{
+  xwidth: 5em;
+  xmargin-left: 1em;
+}
+
+div.row div.button.wide
+{
+  width: unset;
+  margin-left: 1em;
+}
+
+div.map div.mapdiv
+{
+  height:400px;
+  width: 100%;
+}
+

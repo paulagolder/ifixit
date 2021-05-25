@@ -1,0 +1,86 @@
+{# views/repair/script.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+{{ parent() }}
+<link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+<link href="{{ asset('/css/button.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">Edit Repair:</div>
+  <div class="title" >{{repair.name}}({{repair.repairid}})</div>
+  <div class="button  right"> <a class="button" href ="/" >{{'back'}} </a> </div>
+</div>
+{% endblock %}
+
+{% block middle %}
+<div id="middle" >
+  <div id="repairedit"  >
+    <div>
+
+      {% if reply %}
+      {% set replydata = reply.Dialogreply | jsondecodearray  %}
+      {% dump("hello") %}
+      {% dump(replydata) %}
+      {% else %}
+      {% set replydata = "" %}
+      {% endif %}
+      <form method="post" id="form1" action="/repair/updatescript/{{repair.repairid}}/{{step}}">
+        <div id="mastercontainer">
+          <div id="container">
+            <div id="atext">{{ dialog.dtext }}</div>
+            <div id="ashape" >
+              <img src="{{ asset('images/bubble_2.png') }}" />
+            </div>
+            <div class="tooltip button">HELP
+              <span class="tooltiptext">{{dialog.dhelp}}</span>
+            </div>
+          </div>
+          <div id="containerr">
+            <div id="atextr">
+              {% for afield in dialog.dfields %}
+              {% if afield.ftype  is defined  %}
+                {% set ftype = afield.ftype %}
+                {% else %}
+                {% set ftype = 'field' %}
+                {% endif %}
+                {% set fname = afield.fname %}
+              {% if ftype=='button' %}
+                  {% dump(afield) %}
+                  <div class="buttons  row">
+                    <input type="radio" id="yes" name="{{fname}}" value="YES">
+                    <label for="yes">YES</label><br>
+                    <input type="radio" id="no" name="{{fname}}" value="NO">
+                    <label for="no">NO</label><br>
+                    <input type="radio" id="dk" name="{{fname}}" value="DK">
+                    <label for="dk">DK</label>
+                          </div>
+                {% else %}
+                  {% if replydata %}
+                    {% set rdata= replydata | getelement(fname)  %}
+                    <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
+                  {% else %}
+                      <input type="text" id="{{afield.fname}}" name="{{afield.fname}}" placeholder="{{afield.fprompt}}"><br>
+                  {% endif %}
+              {% endif %}
+              {% endfor %}
+                </div>
+                <div id="ashaper" >
+                  <img src="{{ asset('images/bubble_2.png') }}" />
+                </div>
+              </div>
+              <div id="containerfr">
+                <div id="atextfr">
+                  <button type="submit">NEXT</button>
+                </div>
+              </form>
+            </div>
+          </div>
+{% endblock %}

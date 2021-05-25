@@ -1,3 +1,21 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\MainController::Overview
+
+repair_new:
+    path: /repair/new
+    controller: App\Controller\RepairController::new
+
+repair_edit:
+    path: /repair/edit/{rpid}/{step}
+    controller: App\Controller\RepairController::edit
+    defaults:
+      rpid: -1
+      step: client
+
+repair_update:
+    path: /repair/updatescript/{rpid}/{step}
+    controller: App\Controller\RepairController::update
+    defaults:
+      rpid: -1
+      step: client
