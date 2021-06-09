@@ -24,63 +24,109 @@
 <div id="middle" >
   <div id="repairedit"  >
     <div>
+      {% for key,astep in script %}
+ {%  if true %}
+ {% set adialog = dialogs | getelement(astep) %}
+ {% set reply = replies | getelement(astep) %}
+   {% if adialog.dname == "exit"  %}
 
+   {% elseif adialog.dname == step  %}
       {% if reply %}
-      {% set replydata = reply.Dialogreply | jsondecodearray  %}
-      {% dump("hello") %}
-      {% dump(replydata) %}
+        {% set replydata = reply.Dialogreply | jsondecodearray  %}
       {% else %}
-      {% set replydata = "" %}
+        {% set replydata = "" %}
       {% endif %}
       <form method="post" id="form1" action="/repair/updatescript/{{repair.repairid}}/{{step}}">
-        <div id="mastercontainer">
+        <div class="activecontainer">
           <div id="container">
-            <div id="atext">{{ dialog.dtext }}</div>
+            <div id="atext">{{ adialog.dlabel }}</div>
             <div id="ashape" >
               <img src="{{ asset('images/bubble_2.png') }}" />
             </div>
             <div class="tooltip button">HELP
-              <span class="tooltiptext">{{dialog.dhelp}}</span>
+              <span class="tooltiptext">{{adialog.dhelp}}</span>
             </div>
           </div>
           <div id="containerr">
             <div id="atextr">
-              {% for afield in dialog.dfields %}
-              {% if afield.ftype  is defined  %}
-                {% set ftype = afield.ftype %}
+              {% for afield in adialog.dfields %}
+                {% if afield.ftype  is defined  %}
+                   {% set ftype = afield.ftype %}
                 {% else %}
-                {% set ftype = 'field' %}
+                   {% set ftype = 'field' %}
                 {% endif %}
                 {% set fname = afield.fname %}
-              {% if ftype=='button' %}
-                  {% dump(afield) %}
-                  <div class="buttons  row">
-                    <input type="radio" id="yes" name="{{fname}}" value="YES">
-                    <label for="yes">YES</label><br>
-                    <input type="radio" id="no" name="{{fname}}" value="NO">
-                    <label for="no">NO</label><br>
-                    <input type="radio" id="dk" name="{{fname}}" value="DK">
-                    <label for="dk">DK</label>
-                          </div>
-                {% else %}
-                  {% if replydata %}
+               {% if ftype=='button' %}
+                  {% if afield.fchoices is defined %}
+                    {% set choices = (afield.fchoices |split(',') ) %}
                     {% set rdata= replydata | getelement(fname)  %}
-                    <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
+                     <div class="buttons  row">
+                       {% for choice in choices %}
+                       {% if choice == rdata %}
+                       <input type="radio" id="{{choice}}" name="{{fname}}" value="{{choice}}" checked >
+                        {% else %}
+                        <input type="radio" id="{{choice}}" name="{{fname}}" value="{{choice}}"  >
+                        {% endif %}
+                          <label for="{{choice}}">{{choice}}</label><br>
+                       {% endfor %}
+                     </div>
+                  {% endif %}
+               {% elseif ftype=='text' %}
+                     <div class="textblock">
+                       {% if replydata %}
+                         {% set rdata= replydata | getelement(fname)  %}
+                           <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
+                       {% else %}
+                           <input type="text" id="{{afield.fname}}" name="{{afield.fname}}" placeholder="{{afield.fprompt}}"><br>
+                       {% endif %}
+                     </div>
+               {% else %}
+               {% if replydata and (replydata | getelement(fname)  | length > 0) %}
+                    {% set rdata= replydata | getelement(fname)  %}
+                       <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
                   {% else %}
                       <input type="text" id="{{afield.fname}}" name="{{afield.fname}}" placeholder="{{afield.fprompt}}"><br>
                   {% endif %}
-              {% endif %}
+               {% endif %}
               {% endfor %}
-                </div>
-                <div id="ashaper" >
+            </div>
+            <div id="ashaper" >
                   <img src="{{ asset('images/bubble_2.png') }}" />
-                </div>
-              </div>
-              <div id="containerfr">
+            </div>
+          </div>
+          <div id="containerfr">
                 <div id="atextfr">
                   <button type="submit">NEXT</button>
                 </div>
-              </form>
-            </div>
           </div>
+        </div>
+      </form>
+   {% else %}
+      <div  class="mastercontainer">
+        <div class="container">
+          <div class="dialogname"> {{ adialog.Dlabel }}</div>
+          {% dump(adialog) %}
+        </div>
+        <div class= "containerr">
+          <div class="dialogfields">
+            {% if reply.Dialogreply is defined %}
+           {% set replylist = reply.Dialogreply | jsondecode  %}
+           {% dump(replylist) %}
+           {% for key, value in replylist|cast_to_array %}
+             {% if value is empty %}
+             <div class="replyfield red">{{key}}: {{value}}</div>
+             {% else %}
+             <div class="replyfield">{{key}}: {{value}}</div>
+             {% endif %}
+           {% endfor %}
+           {% endif %}
+          </div>
+       </div>
+       <div class= "containerfr">
+         <div><a class="button"  href="/repair/edit/{{repair.repairid}}/{{astep}}">EDIT</a></div>
+       </div>
+      </div>
+   {% endif %}
+   {% endif %}
+ {% endfor %}
 {% endblock %}

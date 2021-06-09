@@ -17,7 +17,7 @@ class DialogreplyRepository extends EntityRepository
     }
 
 
-     public function findOne($rpid,$dlgname)
+    public function findOne($rpid,$dlgname)
     {
       $qb = $this->createQueryBuilder("p");
       $qb->where("p.RepairId = :rpid");
@@ -26,6 +26,20 @@ class DialogreplyRepository extends EntityRepository
        $qb->setParameter('dlgname', $dlgname);
        $reply =  $qb->getQuery()->getOneOrNullResult();;
        return $reply;
+    }
+
+    public function findAllforRepair($rpid)
+    {
+      $qb = $this->createQueryBuilder("p");
+      $qb->where("p.RepairId = :rpid");
+       $qb->setParameter('rpid', $rpid);
+       $replies =  $qb->getQuery()->getResult();
+          $replies_array = [];
+       foreach( $replies as $reply)
+       {
+         $replies_array[$reply->getDialogname()] = $reply;
+       }
+       return $replies_array;
     }
 
 }

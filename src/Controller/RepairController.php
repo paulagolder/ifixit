@@ -14,52 +14,47 @@ use App\Entity\Dialogreply;
 class RepairController extends AbstractController
 {
     private $requestStack;
-
+    private $defaultscript;
 
     public function __construct( RequestStack $request_stack)
     {
         $this->requestStack = $request_stack;
-    }
-
-    public function new()
-    {
-       $date = $objDateTime = new \DateTime('NOW');
-
-        return $this->render('repair/edit.html.twig', [
-            'date' => $date,
-        ]);;
+        $this->defaultscript = "client,object,powered,working,fault,end";
     }
 
 
     public function edit($rpid,$step)
     {
-        $dialog = $this->getDoctrine()->getRepository("App:Dialog")->findOnebyName($step);
-        dump($dialog);
-
+        $dialogs = $this->getDoctrine()->getRepository("App:Dialog")->findAll();
         $request = $this->requestStack->getCurrentRequest();
         if($rpid)
         {
               $arepair = $this->getDoctrine()->getRepository("App:Repair")->findOne($rpid);
-              $areply = $this->getDoctrine()->getRepository("App:Dialogreply")->findOne($rpid,$step);
-              dump($arepair);
-              dump($areply);
+              $script[] = explode(",",$arepair->getScript());
+              $replies = $this->getDoctrine()->getRepository("App:Dialogreply")->findAllforRepair($rpid);
+
+
         }
         if(! isset($arepair))
         {
             $arepair= new repair();
             $arepair->setName("new repair add name");
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($arepair);
-                $entityManager->flush();
-                $rpid = $arepair->getRepairid();
+            $date = new \DateTime();
+            $arepair->setUpdated($date);
+            $arepair->setScript($this->defaultscript);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($arepair);
+            $entityManager->flush();
+            $rpid = $arepair->getRepairid();
         }
 
         return $this->render('repair/script.html.twig', array(
-            "dialog"=>$dialog,
+            "dialogs"=>$dialogs,
             "step" => $step,
             'rpid'=>$rpid,
+            'script'=>$script[0],
             'repair'=>$arepair,
-            'reply'=>$areply,
+            'replies'=>$replies,
             'returnlink'=>'/',
             ));
 }
@@ -84,6 +79,7 @@ class RepairController extends AbstractController
         dump($areply->getDialogreply());
        if($request->getMethod() == 'POST')
        {
+       $date = new \DateTime();
         $fields= $dialog->getDfields();
         $data=[];
         foreach($fields as $field)
@@ -92,12 +88,19 @@ class RepairController extends AbstractController
         }
         dump($data);
            $areply->setDialogreply(json_encode($data));
+           $areply->setUpdated($date);
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($areply);
                 $entityManager->flush();
         }
-        $step = $dialog->getDnext();
-       return $this->redirectToRoute('repair_edit', ['rpid' => $rpid,'step'=>$step,]);
+
+        if($dialog->getDnext() && $dialog->getDnext()!= "")
+        {
+            $step = $dialog->getDnext();
+            dump($step);
+        }
+        return $this->redirectToRoute('repair_edit', ['rpid' => $rpid,'step'=>$step,]);
+
 
 
 }

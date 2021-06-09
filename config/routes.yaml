@@ -2,6 +2,16 @@ index:
     path: /
     controller: App\Controller\MainController::Overview
 
+fixer:
+    path: /fixer/{fxid}
+    controller: App\Controller\MainController::fixerview
+
+fixers:
+    path: /fixers
+    controller: App\Controller\MainController::fixers
+
+
+
 repair_new:
     path: /repair/new
     controller: App\Controller\RepairController::new
@@ -19,3 +29,12 @@ repair_update:
     defaults:
       rpid: -1
       step: client
+
+fixer_follow:
+     path: /fixer/follow/{fxid}/{rpid}
+     controller: App\Controller\FixerController::follow
+
+
+fixer_view:
+     path: /fixer/view/{fxid}/{rpid}
+     controller: App\Controller\FixerController::view

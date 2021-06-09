@@ -130,7 +130,7 @@ a.button {
   font-family : sans-serif;
   display : inline-block;
   vertical-align : middle;
-  margin-right : 0.625em;
+  xmargin-right : 0.625em;
   border-radius : 0.3125em;
   border : silver solid 1px;
   padding : 0.5em;
@@ -195,11 +195,29 @@ div.button {
   xmargin-right : 0.625em;
   border-radius : 0.3125em;
   border : silver solid 1px;
+  xpadding : 0.5em;
+  color : black;
+  text-decoration : none;
+  cursor: pointer;
+}
+
+
+div.tooltip.button {
+  background-color : white;
+  font-size : 1em;
+  line-height : 0.3em;
+  font-family : sans-serif;
+  display : inline-block;
+  vertical-align : middle;
+  xmargin-right : 0.625em;
+  border-radius : 0.3125em;
+  border : silver solid 1px;
   padding : 0.5em;
   color : black;
   text-decoration : none;
   cursor: pointer;
 }
+
 
 div.mypage
 {

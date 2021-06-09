@@ -13,7 +13,12 @@ class DialogRepository extends EntityRepository
     {
        $qb = $this->createQueryBuilder("p");
        $dialogs =  $qb->getQuery()->getResult();
-       return $dialogs;
+       $dialogs_array = [];
+       foreach( $dialogs as $dialog)
+       {
+         $dialogs_array[$dialog->getDname()] = $dialog;
+       }
+       return $dialogs_array;
     }
 
     public function findOnebyName($dname)

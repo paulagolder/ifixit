@@ -1,0 +1,24 @@
+{# templates/main/fixers.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">IFIXIT fixers</div>
+  <div class="button  right"> <a class="button" href ="/" >{{'back'}} </a> </div>
+</div>
+{% endblock %}
+{% block middle %}
+{% for afixer in fixers  %}
+ <div class="row">
+   <div class="button"> <a class="button" href ="/fixer/{{afixer.fixerid}}" >{{afixer.nickname}}</a> </div>
+   <div>{{afixer.lastvisit |date("m/d/Y") }}</div>
+ </div>
+{% endfor %}
+
+ <div class="button bottom right"> <a class="button" href = "/fixer/edit/0" >Add New Fixer</a> </div>
+{% endblock %}

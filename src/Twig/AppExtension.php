@@ -26,6 +26,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('jsondecode', [$this,'jsonDecode']),
             new TwigFilter('jsondecodearray', [$this,'jsonDecodeArray']),
             new TwigFilter('getelement', [$this,'getElement']),
+            new TwigFilter('cast_to_array', array($this, 'objectFilter')),
         ];
     }
 
@@ -44,9 +45,26 @@ class AppExtension extends AbstractExtension
 
     public function getElement($arry,$string)
     {
-        return $arry[$string];
+        if($string)
+        {
+        if( array_key_exists($string, $arry))
+        {
+
+           return $arry[$string];
+        }
+        else
+        {
+           if( array_key_exists(0, $arry))
+               return $arry[0];
+                  else return null;
+        }
+        }
     }
 
-
+    public function objectFilter($stdClassObject)
+    {
+         $response = (array)$stdClassObject;
+         return $response;
+     }
 
  }

@@ -32,10 +32,53 @@ div#repairedit div div.heading.row
   height:100%;
 }
 
-#mastercontainer
+
+
+div.activecontainer
 {
-   display:flex;
-   background-color:  #6F0;
+  display:flex;
+  background-color:  #6F0;
+  margin-top:10px;
+}
+
+
+div.mastercontainer div.container div.dialogname
+{
+  font-size: 0.8em;
+}
+
+div.mastercontainer
+{
+  display:flex;
+  background-color:  #6F6;
+  margin-top:10px;
+}
+
+div.container {
+position: relative;
+z-index: 0;
+width: 300px;
+}
+
+div.container.red {
+  background-color:  #F00;
+}
+
+div.replyfield.red {
+  color:  #F00;
+}
+
+div.containerr {
+position: relative;
+z-index: 0;
+width: 300px;
+}
+
+div.containerfr {
+position: relative;
+z-index: 0;
+width: 300px;
+text-align: center;
 }
 
 #atext {
@@ -93,7 +136,7 @@ transform: rotate(180deg);
 #atextr {
 position: absolute;
 z-index: 2;
-top: 45%;
+top: 47%;
 text-align: center;
 margin: auto;
 width:100%;
@@ -106,4 +149,18 @@ top: 45%;
 text-align: center;
 margin: auto;
 width:100%;
+}
+
+div.activecontainer input[placeholder]
+{
+  color: red;
+}
+
+
+ div.dialogtext
+{
+  background : yellow;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
 }

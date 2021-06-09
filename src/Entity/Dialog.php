@@ -10,24 +10,25 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Dialog
 {
-     /**
-     * @ORM\Id
-     * @ORM\Column(name="dialogid",type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $DialogId;
+
 
     /**
-     * @ORM\Column(name="dname",type="string", length=20)
+    * @ORM\Id
+     * @ORM\Column(name="dname",type="string", length=200)
      */
     private $Dname;
 
 
     /**
-     * @ORM\Column(name="dtext",type="string", length=200)
+     * @ORM\Column(name="dlabel",type="string", length=200)
      */
-    private $Dtext;
+    private $Dlabel;
 
+
+       /**
+     * @ORM\Column(name="dprompt",type="string", length=200)
+     */
+    private $Dprompt;
 
         /**
      * @ORM\Column(name="dhelp",type="string", length=200)
@@ -44,17 +45,13 @@ class Dialog
      */
     private $Dfields;
 
+    /**
+     * @ORM\Column(name="dupdated",type="datetime")
+     */
+    private $Dupdated;
 
-    public function getDialogId()
-    {
-        return $this->DialogId;
-    }
 
-    public function setDialogId($number)
-    {
-        $this->DialogId = $number;
-        return $this;
-    }
+ public $Complete;
 
     public function getDname()
     {
@@ -67,14 +64,25 @@ class Dialog
         return $this;
     }
 
-     public function getDtext()
+     public function getDlabel()
     {
-        return $this->Dtext;
+        return $this->Dlabel;
     }
 
-    public function setDtext(string $text)
+    public function setDlabel(string $text)
     {
-        $this->Dtext = $text;
+        $this->Dlabel = $text;
+        return $this;
+    }
+
+      public function getDprompt()
+    {
+        return $this->Dprompt;
+    }
+
+    public function setDprompt(string $text)
+    {
+        $this->Dprompt = $text;
         return $this;
     }
 
@@ -108,6 +116,17 @@ class Dialog
     public function setDfields(string $text)
     {
         $this->Dtext = $fields;
+        return $this;
+    }
+
+    public function getDupdated()
+    {
+        return $this->Dupdated;
+    }
+
+    public function setDupdated( $date)
+    {
+        $this->Dupdated = $date;
         return $this;
     }
 }

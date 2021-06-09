@@ -34,7 +34,7 @@ class Dialogreply
     private $Reply;
 
 
-            /**
+    /**
      * @ORM\Column(name="updated",type="datetime")
      */
     private $Updated;
@@ -90,9 +90,9 @@ class Dialogreply
         return $this->Updated;
     }
 
-    public function setUpdated(string $Name)
+    public function setUpdated($date)
     {
-        $this->Updated = $Name;
+        $this->Updated = $date;
         return $this;
     }
 

@@ -1,0 +1,38 @@
+{# templates/main/fixerview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block  header %}
+<div class="header row" >
+<div class="label" >Welcome to IFIXIT </div>
+<div class="field" >{{fixer.nickname}}</div>
+<div class="date" >{{ date |date("m/d/Y") }}</div>
+  <div class="button  right"> <a class="button" href ="/" >Back</a> </div>
+</div>
+{% endblock %}
+
+{% block middle %}
+{% for arepair in repairs  %}
+ <div class="row">
+ <a class="button" href = "/fixer/view/{{fixer.fixerid}}/{{arepair.repairid}}" >{{ arepair.name }}</a>
+ {% if tracks[arepair.repairid] is defined %}
+ {% if tracks[arepair.repairid].follow %}
+ <a class="button" href = "/fixer/follow/{{fixer.fixerid}}/{{arepair.repairid}}" >UnFollow</a>
+ {% else %}
+  <a class="button" href = "/fixer/follow/{{fixer.fixerid}}/{{arepair.repairid}}" >Follow</a>
+  {% endif %}
+  {%  else %}
+   <a class="button" href = "/fixer/follow/{{fixer.fixerid}}/{{arepair.repairid}}" >UnFollow</a>
+  {% endif %}
+ </div>
+
+{% endfor %}
+
+
+ <div class="button  right"> <a class="button" href = "/repair/edit" >Post New Repair</a> </div>
+{% endblock %}

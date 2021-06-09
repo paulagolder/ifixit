@@ -22,6 +22,16 @@ class Repair
      */
     private $Name;
 
+        /**
+     * @ORM\Column(name="script",type="text", length=50)
+     */
+    private $Script;
+
+    /**
+     * @ORM\Column(name="updated",type="datetime")
+     */
+    private $Updated;
+
     public function getRepairId()
     {
         return $this->RepairId;
@@ -29,7 +39,7 @@ class Repair
 
     public function setRepairId($number)
     {
-        $this->Name = $number;
+        $this->RepairId = $number;
         return $this;
     }
 
@@ -44,6 +54,28 @@ class Repair
         return $this;
     }
 
+     public function getScript()
+    {
+        return $this->Script;
+    }
+
+    public function setScript(string $text)
+    {
+        $this->Script = $text;
+        return $this;
+    }
+
+
+    public function getUpdated()
+    {
+        return $this->Updated;
+    }
+
+    public function setUpdated($date)
+    {
+        $this->Updated = $date;
+        return $this;
+    }
 
 }
 
