@@ -1,9 +1,31 @@
 # This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
 
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+
+  pdf-function: true
+  location-path: "/fr/location/"
+  recaptcha_key: '%env(resolve:RECAPTCHA_KEY)%'
+  recaptcha_secret: '%env(resolve:RECAPTCHA_SECRET)%'
+  maxlistuser: 20
+  maxlistadmin: 100
+  maxrecentchanges: 20
+  defaultcontent: 203
+  default_locale: fr
+  kernel.default_locale: fr
+  languages: ["fr", "en"]
+  version-name: "FFLSAS-20"
+  admin-name: '%env(resolve:ADMIN_NAME)%'
+  admin-email: '%env(resolve:ADMIN_EMAIL)%'
+  testemail: '%env(resolve:TESTEMAIL)%'
+  administratorsemails: '%env(resolve:ADMINISTRATORSEMAILS)%'
+  new-images-folder: '%kernel.project_dir%/public/newimages/'
+  new-images-path: '/newimages/'
+  old-images-path: "/oldimages/"
+  old-images-folder: "%kernel.project_dir%/public/oldimages/"
+    #external-newimages: "http://fflsas.org/web/newimages/"
+  kml-folder-long: '%kernel.project_dir%/public/kml/'
+  kml-folder: '/kml/'
+  base-url: '%env(resolve:BASE_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -14,18 +36,46 @@ services:
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
-        resource: '../src/Controller/'
+        resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+
+      #app.mylibrary:
+    #    class:
+    App\Service\MyLibrary:
+        arguments:
+           #$newimagepath : '%new-images-folder%'
+           $oldimagespath: '%old-images-path%'
+           $newimagespath : '%new-images-path%'
+
+
+    linkref_service:
+         class: App\Controller\LinkrefController
+         calls:
+            - [setContainer, ["@service_container"]]
+
+
+    App\Service\message_service:
+        class: App\Controller\MessageController
+        calls:
+            - [setContainer, ["@service_container"]]
+
+
+
+    App\Service\FileUploader:
+        arguments:
+            $targetDir: '%new-images-folder%'
+
+
+
+
+

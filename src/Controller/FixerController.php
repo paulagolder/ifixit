@@ -16,11 +16,18 @@ class FixerController extends AbstractController
 {
   private $requestStack;
   private $defaultscript;
+  private $mylib;
 
-  public function __construct( RequestStack $request_stack)
+
+
+  private $encoderFactory;
+
+
+  public function __construct( MyLibrary $mylib ,RequestStack $request_stack,EncoderFactoryInterface $encoderFactory)
   {
+    $this->mylib = $mylib;
     $this->requestStack = $request_stack;
-    $this->defaultscript = "client,object,powered,working,fault,end";
+    $this->encoderFactory = $encoderFactory;
   }
 
 
@@ -114,5 +121,49 @@ class FixerController extends AbstractController
     }
     return $this->redirectToRoute('repair_edit', ['rpid' => $rpid,'step'=>$step,]);
   }
+
+
+  public function fixeredit($fxid)
+  {
+
+    if($fxid < 1)
+    {
+      $fixer = new Fixer();
+      $fixer->setNickname("nickname");
+      $fixer->setFullname("fullname");
+      $fixer->setEmail("dummy@dummy.com");
+      $entityManager = $this->getDoctrine()->getManager();
+      $entityManager->persist($fixer);
+      $entityManager->flush();
+      $fxid = $fixer->getFixerId();
+    }
+    $request = $this->requestStack->getCurrentRequest();
+    $fixer = $this->getDoctrine()->getRepository('App:Fixer')->findOne($fxid);
+    $encoder = $this->encoderFactory->getEncoder($fixer);
+    $tpass= $fixer->getEmail();
+
+    $form = $this->createForm(FixerForm::class, $fixer);
+
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid())
+    {
+      $entityManager = $this->getDoctrine()->getManager();
+      $plainpassword = $fuser->getPlainPassword();
+      $hashpassword = $encoder->encodePassword($plainpassword,null);
+      $fixer->setPassword($hashpassword);
+      $entityManager->persist($fixer);
+      $entityManager->flush();
+      return $this->redirect("/".$this->lang."/fixer/".$fxid);
+    }
+
+    $password = $fixer->getPassword();
+
+    return $this->render('fixer/fixeredit.html.twig', array(
+      'form' => $form->createView(),
+      'password' => $fixer->getPassword(),
+      'returnlink'=> "/fixer/".$fxid,
+      ));
+  }
+
 
 }

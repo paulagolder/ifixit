@@ -4,7 +4,12 @@ index:
 
 fixer:
     path: /fixer/{fxid}
-    controller: App\Controller\MainController::fixerview
+    controller: App\Controller\FixerController::fixer_view
+
+
+fixer_edit:
+    path: /fixer/edit/{fxid}
+    controller: App\Controller\FixerController::fixeredit
 
 fixers:
     path: /fixers
