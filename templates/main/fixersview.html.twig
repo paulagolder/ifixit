@@ -15,10 +15,11 @@
 {% block middle %}
 {% for afixer in fixers  %}
  <div class="row">
-   <div class="button"> <a class="button" href ="/fixer/{{afixer.fixerid}}" >{{afixer.nickname}}</a> </div>
-   <div>{{afixer.lastvisit |date("m/d/Y") }}</div>
+   <div class="label button"> <a class="button" href ="/fixer/{{afixer.id}}" >{{afixer.nickname}}</a> </div>
+   <div calss="value">{{afixer.lastlogin |date("m/d/Y") }}</div>
+    <div class="button  right"> <a class="button" href = "/fixer/edit/{{afixer.id}}" >EditFixer</a> </div>
  </div>
 {% endfor %}
 
- <div class="button bottom right"> <a class="button" href = "/fixer/edit/0" >Add New Fixer</a> </div>
+ <div class="button bottom right"> <a class="button" href = "/fixer/new" >Add New Fixer</a> </div>
 {% endblock %}

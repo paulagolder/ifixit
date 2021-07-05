@@ -7,19 +7,19 @@
    <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
 {% endblock %}
 
-{% block middle %}
-<div class="row" >
+{% block header %}
+<div class="header row" >
 <div>IFIXIT fixers</div>
-
-
 </div>
-
+{% endblock %}
+{% block middle %}
 {% for afixer in fixers  %}
  <div class="row">
-<div>{{fixer.nickname}}</div>
-<div>{{ fixer.date |date("m/d/Y") }}</div>
+<div class="label">{{fixer.nickname}}</div>
+<div class="value" >{{fixer.lastvisit | date("d/m/Y") }}</div>
+ <div class="button  right"> <a class="button" href = "/fixer/edit/{{fixer.fixerid}}" >EditFixer</a> </div>
  </div>
 {% endfor %}
 
- <div class="button  right"> <a class="button" href = "/fixer/edit/0" >Add New Fixer</a> </div>
+ <div class="button  right"> <a class="button" href = "/fixer/new" >Add New Fixer</a> </div>
 {% endblock %}

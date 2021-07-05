@@ -45,6 +45,8 @@ class AppExtension extends AbstractExtension
 
     public function getElement($arry,$string)
     {
+        if(is_array($arry))
+        {
         if($string)
         {
         if( array_key_exists($string, $arry))
@@ -59,6 +61,8 @@ class AppExtension extends AbstractExtension
                   else return null;
         }
         }
+        }
+        else  return $arry;
     }
 
     public function objectFilter($stdClassObject)

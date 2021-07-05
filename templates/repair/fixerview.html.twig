@@ -1,0 +1,153 @@
+{# views/repair/script.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+{{ parent() }}
+<link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+<link href="{{ asset('/css/button.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">Edit Repair:</div>
+  <div class="title" >{{repair.name}}({{repair.repairid}})</div>
+  <div class="button  right"> <a class="button" href ="/" >{{'back'}} </a> </div>
+</div>
+{% endblock %}
+
+{% block middle %}
+<div id="middle" >
+  {% for message in app.flashes('flash-message') %}
+  <div class="flash">
+    {{ message }}
+  </div>
+  {% endfor %}
+  <div id="repairedit"  >
+    {% for key,astep in script %}
+        {% set adialog = dialogs | getelement(astep) %}
+        {% set reply = replies | getelement(astep) %}
+        {% if adialog %}
+             {% if adialog.dname == step  %}
+{#========================= active step ==========================================#}
+   <div class="activestepcontainer">
+                {% if reply %}
+                   {% set replydata = reply.Dialogreply | jsondecodearray  %}
+                {% else %}
+                    {% set replydata = "" %}
+                {% endif %}
+      <form method="post" id="form1" action="/repair/updatescript/{{repair.repairid}}/{{step}}">
+      <div class="infocontainer row">
+          <div id="container">
+            <div id="atext">{{ adialog.dlabel }}</div>
+          </div>
+          <div id="containerr">
+            <div id="atextr">
+              {% for afield in adialog.dfields %}
+                {% if afield.ftype  is defined  %}
+                   {% set ftype = afield.ftype %}
+                {% else %}
+                   {% set ftype = 'field' %}
+                {% endif %}
+                {% set fname = afield.fname %}
+               {% if ftype=='button' %}
+                  {% if afield.fchoices is defined %}
+                    {% set choices = (afield.fchoices |split(',') ) %}
+                    {% set rdata= replydata | getelement(fname)  %}
+                     <div class="buttons  row">
+                       {% for choice in choices %}
+                       {% if choice == rdata %}
+                       <input type="radio" id="{{choice}}" name="{{fname}}" value="{{choice}}" checked >
+                        {% else %}
+                        <input type="radio" id="{{choice}}" name="{{fname}}" value="{{choice}}"  >
+                        {% endif %}
+                          <label for="{{choice}}">{{choice}}</label><br>
+                       {% endfor %}
+                     </div>
+                  {% endif %}
+               {% elseif ftype=='text' %}
+                     <div class="textblock">
+                       {% if replydata %}
+                         {% set rdata= replydata | getelement(fname)  %}
+                           <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
+                       {% else %}
+                           <input type="text" id="{{afield.fname}}" name="{{afield.fname}}" placeholder="{{afield.fprompt}}"><br>
+                       {% endif %}
+                     </div>
+               {% else %}
+               {% if replydata and (replydata | getelement(fname)  | length > 0) %}
+                    {% set rdata= replydata | getelement(fname)  %}
+                       <input type="text" id="{{afield.fname}}" name="{{afield.fname}}"  value="{{rdata}}" ><br>
+                  {% else %}
+                      <input type="text" id="{{afield.fname}}" name="{{afield.fname}}" placeholder="{{afield.fprompt}}"><br>
+                  {% endif %}
+               {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <div id="containerfr">
+                <div id="atextfr">
+                  <button type="submit">NEXT??</button>
+                </div>
+          </div>
+      </div>
+      </form>
+      <div class="imagecontainer">
+        {% for image in images | getelement(step)  %}
+        {% set ipath = 'repair/images/' ~ image.imagefilepath %}
+        <img onclick="deleteImage({{image.ImageId}})"  class="thumb" src="{{ asset(ipath) }}" alt="{{ image.imagefilepath}}">
+        {% endfor %}
+      </div>
+      <div class="uploadcontainer">
+            Select a file: <input type="file" id="uploader">
+              <button onclick='resize("{{repair.repairid}}","{{step}}")'>Resize</button>
+              <img id="image">
+        {#  <script type="text/javascript" src="{{asset('imageUpload.js')}}"></script> #}
+      </div>
+   </div>
+{#========================= end active step ==========================================#}
+             {% else %}
+{#========================= passive step ==========================================#}
+   <div class="stepcontainer" >
+      <div  class="infocontainer row">
+        <div class="container">
+          <div class="dialogname"> {{ adialog.Dlabel }}</div>
+        </div>
+        <div class= "containerr">
+          <div class="dialogfields">
+            {% if reply.Dialogreply is defined %}
+           {% set replylist = reply.Dialogreply | jsondecode  %}
+           {% for key, value in replylist|cast_to_array %}
+             {% if value is empty %}
+             <div class="replyfield red">{{key}}: {{value}}</div>
+             {% else %}
+             <div class="replyfield">{{key}}: {{value}}</div>
+             {% endif %}
+           {% endfor %}
+           {% endif %}
+          </div>
+        </div>
+        <div class= "containerfr">
+         <div><a class="button"  href="/repair/edit/{{repair.repairid}}/{{astep}}">EDIT</a></div>
+        </div>
+      </div>
+      <div class="imagecontainer">
+        {% dump(images) %}
+            {% for image in images | getelement(astep)  %}
+               {% set ipath = 'repair/images/' ~ image.imagefilepath %}
+                 <img class="thumb" src="{{ asset(ipath) }}" alt="{{ image.imagefilepath}}">
+            {% endfor %}
+      </div>
+   </div>
+{#========================= end passive step ==========================================#}
+             {% endif %}
+       {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{# views/message/template/en/approbationrequest.html.twig #}
+
+<div class="messageheading">
+ <div class="label">Confirm Email</div>
+</div>
+<div class="bodytext">
+ A new user is requesting approval.Someone - we hope it was you - has entered a new email or changed an email address in posting a repair or joining as a repairer. To confirm ths email address is yours please click on the link below. If you did not initiate this action  please ignore this email and  the link to your email address will be deleted in a few days.</div>
+<div class="link">
+    <a href= "{{baseurl}}confirmemail/{{arepair.repairid}}?key={{arepair.repairkey}}">CONFIRM</a>
+</div>
+<div class= "bodytext">
+
+</div>
+

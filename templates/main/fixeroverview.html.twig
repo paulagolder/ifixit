@@ -1,0 +1,42 @@
+{# templates/main/overview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+<div class="heading row">
+<div class="label">IFIXIT : Fixer {{fixer.nickname}}</div>
+</div>
+<div class="heading row">
+<div class="label">Active Repairs</div>
+</div>
+{% endblock %}
+{% block middle %}
+<div class="subheading row">
+<div class="label">Repairs being followed</div>
+</div>
+{% for arepair in repairsfollowed  %}
+
+ <div class="repair row">
+ <div> {{arepair.Name}} </div>
+   <div><a class="button"  href="/repair/fixerview/{{fixer.id}}/{{arepair.RepairId}}/">VIEW</a>
+    <a class="button"  href="fixer/unfollow/{{fixer.id}}/{{arepair.RepairId}}">UNFOLLOW</a></div>
+ </div>
+{% endfor %}
+<div class="subheading row">
+<div class="label">Other Active Repairs</div>
+</div>
+{% for arepair in repairsother  %}
+ <div class="repair row">
+ <div> {{arepair.name}} </div>
+ <div><a class="button"  href="/repair/view/{{arepair.repairid}}/">VIEW</a>
+    <a class="button"  href="fixer/follow/{{fixer.id}}/{{arepair.repairid}}">FOLLOW</a></div>
+ </div>
+{% endfor %}
+
+
+{% endblock %}

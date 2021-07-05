@@ -17,22 +17,19 @@ class UserForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('username', TextType::class,['label' => '.username']);
+        $builder->add('nickname', TextType::class,['label' => 'Nickname']);
+          $builder->add('fullname', TextType::class,['label' => 'Fullname']);
         $builder->add('plainPassword', RepeatedType::class, array(
                 'type' => TextType::class,
                 'first_options'  => array('label' => '.password'),
                 'second_options' => array('label' => 'repeat.password'),));
         $builder->add('email', TextType::class,['label' => '.email']);
-        $builder->add('rolestr', ChoiceType::class,[
-           'label' => '.rolestr',
+        $builder->add('roles', ChoiceType::class,[
+           'label' => '.roles',
             'choices'  => [
              'ROLE_TEMP' => 'ROLE_TEMP',
              'ROLE_USER' => 'ROLE_USER',
              'ROLE_ADMIN' => 'ROLE_ADMIN',
-             'ROLE_APWC' => 'ROLE_APWC',
-             'ROLE_AEMC' => 'ROLE_AEMC',
-             'ROLE_AADA' => 'ROLE_AADA',
-             'ROLE_DELL' => 'ROLE_DELL',
        ], ]);
         $builder->add('membership', ChoiceType::class,[
           'label' => '.membership',
@@ -40,18 +37,12 @@ class UserForm extends AbstractType
              '.temporary' => 'TEMP',
              'USER' => 'USER',
              'ADMIN' => 'ADMIN',
-             'DELL' => 'DELL',
        ], ]);
-        $builder->add('locale', ChoiceType::class, [
-           'choices'  => [
-             'FR' => 'fr',
-             'EN' => 'en',
-        ],'label' => '.language']);
+
         $builder->get('email')->setRequired(false);
         $builder->get('email')->setDisabled(true);
-        $builder->get('username')->setDisabled(true);
+        $builder->get('nickname')->setDisabled(false);
         $builder->get('plainPassword')->setRequired(false);
-        $builder->get('locale')-> setRequired(false);
     }
 
     public function configureOptions(OptionsResolver $resolver)

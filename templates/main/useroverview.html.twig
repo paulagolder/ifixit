@@ -1,0 +1,41 @@
+{# templates/main/overview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+<div class="heading row">
+
+{% if repairkey %}
+<div class="label">Welcome back to IFIXIT </div>
+{% else %}
+<div class="label">Welcome to IFIXIT </div>
+{% endif %}
+<div class="button  right"> <a class="button" href = "/fixer/login" >Fixer Login..</a> </div>
+
+
+
+</div>
+{% endblock %}
+{% block middle %}
+{% for arepair in repairs  %}
+ <div class="repair row">
+ <div> {{arepair.name}} </div>
+
+{% if repairkey == arepair.repairkey %}
+<a class="button" href = "/repair/edit/{{arepair.repairid}}" >Edit</a>
+{% else %}
+<a class="button" href = "/repair/show/{{arepair.repairid}}" >View</a>
+{% endif %}
+
+ </div>
+
+{% endfor %}
+
+
+ <div class="button  right"> <a class="button" href = "/repair/new" >Post New Repair</a> </div>
+{% endblock %}

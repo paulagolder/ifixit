@@ -1,0 +1,22 @@
+{# views/message/template/en/cond_reg_notice.html.twig #}
+<div class="messageheading">
+ <div class="label">Site Registration</div>
+</div>
+<div class="bodytext">
+   You have registered with site Ifixit and now need to confirm your email address.
+</div>
+
+<div class="bodytext">
+   Click on the following link;
+</div>
+<div class="link">
+   <a href= "{{baseurl}}remoteconfirmemail/{{user.id}}/{{user.fixerkey}}" >Register</a>
+</div>
+<div class="bodytext">
+   Or visit the site and enter the code <{{user.fixerkey}}>  when asked.
+</div>
+<div class= "bodytext">
+ Your application will then be forwarded to an administrator for approval. You will receive an email when approval has been granted.
+</div>
+
+

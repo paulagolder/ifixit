@@ -1,0 +1,32 @@
+{# views/fcecurity/register.html.twig #}
+
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+
+{% endblock %}
+
+{% block header %}
+<div class="heading  row">
+ <div class="label" >User Edit</div>
+ <div class="button right"> <a class="button" href = {{returnlink}} >Back</a> </div>
+ </div>
+{% endblock %}
+{% block middle %}
+<div id="middle" >
+<div id="usereditform"  >
+<div  class="form" >
+    {{ form_start(form)}}
+    {{ form_row(form.nickname  ) }}
+    {{ form_row(form.fullname  ) }}
+    {{ form_row(form.plainPassword)}}
+    {{ form_row(form.email) }}
+
+    <button type="submit">{{'.submit'|trans}}</button>
+    {{ form_end(form) }}
+</div>
+</div>
+</div>
+{% endblock %}

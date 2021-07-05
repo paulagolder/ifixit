@@ -22,6 +22,24 @@ class Repair
      */
     private $Name;
 
+
+        /**
+     * @ORM\Column(name="email",type="string", length=50)
+     */
+    private $Email;
+
+
+        /**
+     * @ORM\Column(name="repairkey",type="string", length=50)
+     */
+    private $Repairkey;
+
+
+           /**
+     * @ORM\Column(name="tempkey",type="string", length=50)
+     */
+    private $Tempkey;
+
         /**
      * @ORM\Column(name="script",type="text", length=50)
      */
@@ -51,6 +69,39 @@ class Repair
     public function setName(string $Name)
     {
         $this->Name = $Name;
+        return $this;
+    }
+
+      public function getEmail()
+    {
+        return $this->Email;
+    }
+
+    public function setEmail(string $text)
+    {
+        $this->Email = $text;
+        return $this;
+    }
+
+      public function getRepairkey()
+    {
+        return $this->Repairkey;
+    }
+
+    public function setRepairkey(string $text)
+    {
+        $this->Repairkey = $text;
+        return $this;
+    }
+
+       public function getTempkey()
+    {
+        return $this->Tempkey;
+    }
+
+    public function setTempkey(string $text)
+    {
+        $this->Tempkey = $text;
         return $this;
     }
 

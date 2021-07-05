@@ -126,7 +126,7 @@ width: 300px;
 position: absolute;
 z-index: 1;
 background-color: #6F0;
-height: 100%;
+height: 98%;
 width: 100%;
 top: 2px;
 left: 2px;
@@ -163,4 +163,49 @@ div.activecontainer input[placeholder]
   border-width: 5px;
   border-style: solid;
   border-color: #555 transparent transparent transparent;
+}
+
+
+div.connect  div.text
+{
+  width: 15em;
+  white-space: normal;
+  text-overflow: ellipsis;
+  overflow: visible;
+}
+
+
+div.stepcontainer img.thumb
+{
+  width: 50px;
+}
+
+div.activestepcontainer img.thumb
+{
+  width: 75px;
+}
+
+
+div.stepcontainer
+{
+  background-color:  #6F6;
+  border-bottom:  5px solid green;
+}
+
+div.activestepcontainer
+{
+  background-color:  #6F0;
+  border-bottom:  3px solid green;
+}
+
+
+div.infocontainer
+{
+  border-bottom:  1px solid green;
+
+}
+
+div.repair.row div
+{
+   width : 20em;
 }

@@ -1,0 +1,29 @@
+{# templates/main/fixersummarry.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block  header %}
+<div class="heading row" >
+<div class="label" >Fixer Monitor</div>
+<div class="field" >{{fixer.nickname}}</div>
+  <div class="button  right"> <a class="button" href ="{{returnlink}}" >Back</a> </div>
+</div>
+{% endblock %}
+
+{% block middle %}
+{% for arepair in repairs  %}
+ <div class="row">
+<a class="button" href = "/fixer/view/{{arepair.track_FixerId}}/{{arepair.repair_RepairId}}" >{{ arepair.repair_Name }}</a>
+<div > Last Visit : {{arepair.track_Lastvisit | date("m/d/Y") }}</div>
+ </div>
+
+{% endfor %}
+
+
+
+{% endblock %}

@@ -2,38 +2,104 @@ index:
     path: /
     controller: App\Controller\MainController::Overview
 
+login_check:
+    path: /login_check
+
+logout:
+    path: /logout
+    #controller:  App\Controller\SecurityController::logoutAction
+
+
+
+
+login_checkaction:
+    path: /login_check
+    controller:  App\Controller\SecurityController::loginCheckAction
+
+
+register:
+    path: /register
+    controller:  App\Controller\RegistrationController::register
+
+
+password_forgotten:
+    path: /resetpassword
+    controller:  App\Controller\SecurityController::resetpasswordrequest
+
+
+
+
+remote_confirm_email:
+    path: /confirmemail/{rpid}
+    controller:  App\Controller\RepairController::confirmemail
+
+admin_approve_user:
+    path: /approveuser/{uid}
+    controller:  App\Controller\SecurityController::approveuser
+
+
+admin_reject_user:
+    path: /rejectuser/{uid}
+    controller:  App\Controller\SecurityController::rejectuser
+
+remote_request_password:
+    path: /remotechangepassword/{uid}/{code}
+    controller:  App\Controller\SecurityController::remotechangepassword
+
+remote reregistration:
+    path: /remotereregister/{uid}/{code}
+    controller:  App\Controller\SecurityController::remotereregister
+
+remote_deregistration:
+    path: /remotederegister/{uid}/{code}
+    controller:  App\Controller\SecurityController:remotederegister
+
+admin_message:
+   path: /message/{message}
+   controller: App\Controller\SecurityController::Showmessage
+   defaults:
+     message: "No message"
+
+imageupload:
+    path: /imageupload
+    controller:  App\Controller\RepairController::uploadImage
+
+
+#===
+fixer_new:
+    path: /fixer/new
+    controller: App\Controller\RegistrationController::register
+
+fixer_login:
+    path: /fixer/login
+    controller: App\Controller\FixerController::login
+
+fixer_login_action:
+    path: /fixer/login_action
+    controller: App\Controller\FixerController::login_action
+
 fixer:
     path: /fixer/{fxid}
-    controller: App\Controller\FixerController::fixer_view
+    controller: App\Controller\FixerController::fixerview
 
+fixer_followall:
+    path: /fixer/follow/{fxid}/{rpid}
+    controller: App\Controller\FixerController::follow
 
 fixer_edit:
     path: /fixer/edit/{fxid}
     controller: App\Controller\FixerController::fixeredit
 
+fixer_overview:
+    path: /fixer/overview/{fxid}
+    controller: App\Controller\FixerController::overview
+
+
+
 fixers:
     path: /fixers
     controller: App\Controller\MainController::fixers
 
-
-
-repair_new:
-    path: /repair/new
-    controller: App\Controller\RepairController::new
-
-repair_edit:
-    path: /repair/edit/{rpid}/{step}
-    controller: App\Controller\RepairController::edit
-    defaults:
-      rpid: -1
-      step: client
-
-repair_update:
-    path: /repair/updatescript/{rpid}/{step}
-    controller: App\Controller\RepairController::update
-    defaults:
-      rpid: -1
-      step: client
 
 fixer_follow:
      path: /fixer/follow/{fxid}/{rpid}
@@ -43,3 +109,58 @@ fixer_follow:
 fixer_view:
      path: /fixer/view/{fxid}/{rpid}
      controller: App\Controller\FixerController::view
+
+
+#=== repairs =============
+
+
+
+repair_new:
+    path: /repair/new
+    controller: App\Controller\RepairController::new
+
+
+repair_connect:
+    path: /repair/connect
+    controller: App\Controller\RepairController::connect
+
+repair_sendemail:
+    path: /repair/sendemail/{rpid}
+    controller: App\Controller\RepairController::sendemail
+
+repair_makeconnection:
+    path: /repair/makeconnection/{rpid}
+    controller: App\Controller\RepairController::make_connection
+
+repair_show:
+    path: /repair/view/{rpid}
+    controller: App\Controller\RepairController::view
+
+repair_fixerview:
+    path: /repair/fixerview/{fxid}/{rpid}
+    controller: App\Controller\RepairController::fixerview
+
+repair_edit:
+    path: /repair/edit/{rpid}/{step}
+    controller: App\Controller\RepairController::edit
+    defaults:
+      rpid: -1
+      step: exit
+
+repair_addquestion:
+    path:  /repair/addquestion/{rpid}/{step}
+    controller: App\Controller\RepairController::addquestion
+
+repair_deleteimage:
+    path: /repair/deleteimage/{imgid}
+    controller: App\Controller\RepairController::deleteimage
+
+
+
+
+repair_update:
+    path: /repair/updatescript/{rpid}/{step}
+    controller: App\Controller\RepairController::update
+    defaults:
+      rpid: -1
+      step: client

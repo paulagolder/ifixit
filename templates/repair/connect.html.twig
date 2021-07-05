@@ -1,0 +1,30 @@
+{# views/repair/connect.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+{% block header %}
+<div>
+ <div class="heading  row" >
+ <div class="label">Edit your repair requests:</div>
+ <div class="button  right"> <a class="button" href ="/" >BACK</a> </div>
+</div>
+{% endblock %}
+{% block middle %}
+<div class="connect row">
+<div class="container">
+<div class="text" > You have asked to edit rpair posting <span>{{arepair.name}}</span></div>
+<div class="text" > An email will be sent to the address associaed with this posting, if you confirm  using the link in the email you will have edit access to all postings with that email.</div>
+</div>
+<div class="containerr">
+   <div class= "button" ><a  class= "button"  href="/repair/sendemail/{{arepair.repairid}}">CONFIM REQUEST</a></div>
+</div>
+
+</div>
+
+
+{% endblock %}

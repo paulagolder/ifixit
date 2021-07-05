@@ -1,0 +1,35 @@
+{# templates/fixer/login.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">IFIXIT Login fixer</div>
+  <div class="button  right"> <a class="button" href ="/" >Back</a> </div>
+</div>
+ {% include 'flash.html.twig' %}
+{% endblock %}
+{% block middle %}
+
+
+<form action="/fixer/login_action" method="POST">
+<div>
+ <label for="email">EMAIL</label>
+    <input type="email" name="email">
+</div>
+<div>
+     <label for="password">PASSWORD</label>
+    <input type="password" name="password">
+</div>
+
+    <button type="submit">Login</button>
+</form>
+ </div>
+
+
+ <div class="button bottom right"> <a class="button" href = "/fixer/new" >Add New Fixer</a> </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{# templates/main/overview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+<div class="heading row">
+<div class="label">IFIXIT : Fixer {{fixer.nickname}}</div>
+<div class="button  right"> <a class="button" href = "/" >BACK</a> </div>
+</div>
+<div class="heading row">
+<div class="label">Active repairs</div>
+</div>
+{% endblock %}
+{% block middle %}
+{% for arepair in tracks  %}
+ <div class="repair row">
+ <div> {{arepair.repair_Name}} </div>
+
+
+<a class="button" href = "/repair/show/{{arepair.repair_RepairId}}" >View</a>
+
+
+ </div>
+
+{% endfor %}
+
+
+ <div class="button  right"> <a class="button" href = "/repair/new" >Post New Repair</a> </div>
+{% endblock %}

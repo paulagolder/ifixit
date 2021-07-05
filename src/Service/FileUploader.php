@@ -1,29 +1,41 @@
 <?php
 
-// src/AppBundle/Service/FileUploader.php
+// src/App/Service/FileUploader.php
 namespace App\Service;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
+
+
+
+
 
 class FileUploader
 {
-    private $targetDir;
+    private $targetDirectory;
+    private $slugger;
 
-    public function __construct($targetDir)
+    public function __construct($targetDirectory, SluggerInterface $slugger)
     {
-        $this->targetDir = $targetDir;
+        $this->targetDirectory = $targetDirectory;
+        $this->slugger = $slugger;
     }
 
-    public function xupload(UploadedFile $file)
+   public function upload($repairimagesfolder, $file, $filename)
     {
-        $type=  $file->getMimeType();
-        $fileName = md5(uniqid()).'.'.$file->guessExtension();
-        $file->move($this->getTargetDir(), $fileName);
-        return $fileName;
+        try
+        {
+            $file->move($repairimagesfolder, $filename);
+        } catch (FileException $e)
+        {
+            throw new FileException('Failed to upload file');
+        }
     }
 
-    public function getTargetDir()
+    public function getTargetDirectory()
     {
-        return $this->targetDir;
+        return $this->targetDirectory;
     }
 }

@@ -13,9 +13,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bridge\Twig\Mime\NotificationEmail;
 
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
+use App\Form\Type\UserForm;
 use App\Form\Type\UserRegForm;
 use App\Form\Type\ResetForm;
 use App\Form\Type\CompleteRegForm;
@@ -32,7 +34,7 @@ use App\EventListener\ImageUploadListener;
 class RegistrationController extends AbstractController
 {
 
-    private $lang="fr";
+
     private $mylib;
     private $requestStack ;
     private $encoderFactory;
@@ -40,63 +42,79 @@ class RegistrationController extends AbstractController
     private $parameters;
     private $messenger;
 
-    public function __construct( MyLibrary $mylib ,RequestStack $request_stack,EncoderFactoryInterface $encoderFactory,TranslatorInterface $translator,ParameterBagInterface $parameters)
+    public function __construct( MyLibrary $mylib ,RequestStack $request_stack,EncoderFactoryInterface $encoderFactory,ParameterBagInterface $parameters, MessageController  $messenger)
     {
         $this->mylib = $mylib;
         $this->requestStack = $request_stack;
         $this->encoderFactory = $encoderFactory;
-        $this->trans =$translator;
         $this->parameters = $parameters;
+        $this->messenger = $messenger;
     }
 
-    //======================================  registation stage 1  ===============================================
+    //======================================  regisrtation stage 1  ===============================================
     // user registers creates user record and recieves email to confirm email address
     // user confirms email address either by clicking on link or by logging in
 
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $lang = $this->requestStack->getCurrentRequest()->getLocale();
+        $date = new \DateTime();
         $message = "";
-        $user = new User();
-        $user->setLocale( $this->lang);
-        $form = $this->createForm(UserRegForm::class, $user);
+        $fixer = new User();
+        $form = $this->createForm(UserRegForm::class, $fixer);
         $form->handleRequest($request);
-        if($this->getDoctrine()->getRepository("App:User")->isUniqueName($user->getEmail()))
+        if($this->getDoctrine()->getRepository("App:User")->isUniqueName($fixer->getNickname()))
         {
-            if ($form->isSubmitted() && $form->isValid()  && $this->captchaverify($request->get('g-recaptcha-response')) )
+            if ($form->isSubmitted() && $form->isValid() )
             {
-                $encoder = $this->encoderFactory->getEncoder($user);
-                $plainpassword = $user->getPlainPassword();
-                $hashpassword = $encoder->encodePassword($plainpassword,null);
-                $user->setPassword($hashpassword);
-                $user->setLastlogin( new \DateTime());
-                $user->updateRole("createuser");
-                $user->setLocale( $lang );
+                $encoder = $this->encoderFactory->getEncoder(new User());
+                $plainpassword = $fixer->getPlainPassword();
+                $hashpassword = $encoder->encodePassword($plainpassword, null);
+                $fixer->setPassword($hashpassword);
+                $fixer->setLastlogin($date);
+                $fixer->addRole('ROLE_FIXER');
+                $fixer->setFixerkey("".mt_rand(100000, 999999));
                 $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($user);
+                $entityManager->persist($fixer);
                 $entityManager->flush();
                 //message to user
-                $smessage = $this->messenger->sendConfidentialUserMessage('registration.success','cond_reg_notice',$user);
+                dump($fixer);
+               $sender['email'] = $this->getParameter('admin-email');
+               $sender['name'] = $this->getParameter('admin-name');
+               $destination['name'] = $fixer->getNickname();
+               $destination['email'] = $fixer->getEmail();
+               $messageparameters['sender'] = $sender;
+               $messageparameters['destination']= $destination;
+               $messageparameters['date'] = $date;
+               $header =  $this->renderView('message/template/emailheader.html.twig',[],'text/html');
+               $footer =  $this->renderView('message/template/contentemailfooter.html.twig',array('userid'=> $fixer->getNickname() ,'subjectid'=>"stuff" ,),'text/html');
+               $body ="<div>Registration successful please click link to confirm email address</div>";
+               $messagebody =    $this->renderView('message/template/emailfull.html.twig',array(
+          'message'=>$messageparameters,'header'=>$header,'body'=>$body,'footer'=>$footer,),'text/html');
+
+                $this->messenger->sendMessage($sender,$destination,"Registration Successful",$messagebody);
                 //notice to screen
-                $message = array();
-                $message[] = 'you.have.commenced.registration';
-                $message[] = 'to.continue.reply.to.email';
-                return $this->render('registration/done.html.twig',
+                $message = [];
+                $message[] = 'You have commenced registration';
+                $message[]= 'Reply to the email tyou recieve to confirm your email address';
+                $message[]= 'The administator will them approve your registration';
+                return $this->render('main/message.html.twig',
                 array(
-                    'user' => $user ,
+                    'user' => $fixer ,
                     'messages'=>$message,
                     'heading'=> 'registration.started',
+                    'continue'=>"/fixers"
                     ));
             }
         }
-        else{
+        else
+        {
             $message= "duplicate.username";
         }
         return $this->render(
-            'registration/register.html.twig',
+            'security/register.html.twig',
             array('form' => $form->createView() ,
-            'lang'=>$this->lang,
             'message'=>$message,
+            'returnlink'=>"/register",
             ));
     }
 
@@ -107,35 +125,35 @@ class RegistrationController extends AbstractController
     public function confirmemail(Request $request, $uid)
     {
         $lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        $uname = $user->getUsername();
-        $uemail = $user->getEmail();
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        $uname = $fixer->getUsername();
+        $uemail = $fixer->getEmail();
 
-        $form = $this->createForm(ConfirmEmailForm::class, $user);
+        $form = $this->createForm(ConfirmEmailForm::class, $fixer);
         $form->handleRequest($request);
-        $codeisvalid= $user->codeisvalid();
-        $temp = $user->hasRole("ROLE_AEMC");
+        $codeisvalid= $fixer->codeisvalid();
+        $temp = $fixer->hasRole("ROLE_AEMC");
         if ($form->isSubmitted() && $form->isValid() && $codeisvalid && $temp )
         {
-            $user->setLastlogin( new \DateTime());
-            $user->updateRole("emailconfirmed");
-            $user->setUsername($uname);
-            $user->setEmail($uemail);
+            $fixer->setLastlogin( new \DateTime());
+            $fixer->updateRole("emailconfirmed");
+            $fixer->setUsername($uname);
+            $fixer->setEmail($uemail);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
+            $entityManager->persist($fixer);
             $entityManager->flush();
             //message to user
-            $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$user);
+            $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$fixer);
             // message to admin
-            $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$user,$lang);
+            $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$fixer,$lang);
             //clear token
             $this->get('session')->invalidate();
-            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $token = new UsernamePasswordToken($fixer, null, 'main', $fixer->getRoles());
             $this->get('security.token_storage')->setToken($token);
             $this->get('session')->set('_security_main', serialize($token));
             return $this->render('registration/done.html.twig',
             array(
-                'user' => $user ,
+                'user' => $fixer ,
                 'heading'=>'email.confirmed',
                 'messages'=>'',
 
@@ -155,31 +173,31 @@ class RegistrationController extends AbstractController
     public function remoteconfirmemail($uid, $code)
     {
         $lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        if($user)
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        if($fixer)
         {
-            $usercode = $user->getRegistrationCode();
-            $temp = $user->hasRole("ROLE_AEMC");
+            $fixercode = $fixer->getRegistrationCode();
+            $temp = $fixer->hasRole("ROLE_AEMC");
             if($temp )
             {
-                if($code == $usercode  )
+                if($code == $fixercode  )
                 {
-                    $user->setLastlogin( new \DateTime());
-                    $user->updateRole("emailconfirmed");
+                    $fixer->setLastlogin( new \DateTime());
+                    $fixer->updateRole("emailconfirmed");
                     $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($user);
+                    $entityManager->persist($fixer);
                     $entityManager->flush();
                     //message to user
-                    $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$user);
+                    $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$fixer);
                     // message to admin
-                    $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$user,$lang);
+                    $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$fixer,$lang);
                     //clear token
-                    $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+                    $token = new UsernamePasswordToken($fixer, null, 'main', $fixer->getRoles());
                     $this->get('security.token_storage')->setToken($token);
                     $this->get('session')->set('_security_main', serialize($token));
                     return $this->render('registration/done.html.twig',
                     array(
-                        'user' => $user,
+                        'user' => $fixer,
                         'heading'=>'email.confirmed',
                         'messages'=>"",
 
@@ -187,7 +205,7 @@ class RegistrationController extends AbstractController
                 }
                 return $this->render('registration/done.html.twig',
                 array(
-                    'user' => $user,
+                    'user' => $fixer,
                     'heading'=>'failed.to.confirm.email',
                     'messages'=>'',
 
@@ -198,7 +216,7 @@ class RegistrationController extends AbstractController
             {
             return $this->render('registration/done.html.twig',
             array(
-                'user' => $user,
+                'user' => $fixer,
                 'heading'=>'already.confirmed.email',
                 'messages'=>'',
 
@@ -215,21 +233,21 @@ class RegistrationController extends AbstractController
     public function approveuser($uid)
     {
         $lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        $chpw = $user->hasRole("ROLE_AADA");
-        $nomemb = ($user->getMembership() =="" or $user->getMembership() == null );
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        $chpw = $fixer->hasRole("ROLE_AADA");
+        $nomemb = ($fixer->getMembership() =="" or $fixer->getMembership() == null );
         if($chpw or $nomemb)
         {
-            $user->setLastlogin( new \DateTime());
-            $user->updateRole("userapproved");
+            $fixer->setLastlogin( new \DateTime());
+            $fixer->updateRole("userapproved");
             $adminuser = $this->getUser();
             $time = new \DateTime();
-            $user->setContributor($adminuser->getUsername());
-            $user->setUpdate_Dt($time);
+            $fixer->setContributor($adminuser->getUsername());
+            $fixer->setUpdate_Dt($time);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
+            $entityManager->persist($fixer);
             $entityManager->flush();
-            $smessage = $this->messenger->sendUserMessage('registration.complete','registrationcompletion',$user);
+            $smessage = $this->messenger->sendUserMessage('registration.complete','registrationcompletion',$fixer);
             return $this->redirect("/admin/user/".$uid);
         }
         return $this->redirect("/admin/user/".$uid);
@@ -238,22 +256,22 @@ class RegistrationController extends AbstractController
 
     public function rejectuser($uid)
     {
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        $chpw = $user->hasRole("ROLE_AADA");
-        $nomemb = ($user->getMembership() =="" or $user->getMembership() == null );
+
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        $chpw = $fixer->hasRole("ROLE_AADA");
+        $nomemb = ($fixer->getMembership() =="" or $fixer->getMembership() == null );
         if($chpw or $nomemb)
         {
-            $user->setLastlogin( new \DateTime());
-            $user->updateRole("userrejected");
+            $fixer->setLastlogin( new \DateTime());
+            $fixer->updateRole("userrejected");
             $adminuser = $this->getUser();
             $time = new \DateTime();
-            $user->setContributor($adminuser->getUsername());
-            $user->setUpdate_Dt($time);
+            $fixer->setContributor($adminuser->getUsername());
+            $fixer->setUpdate_Dt($time);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
+            $entityManager->persist($fixer);
             $entityManager->flush();
-            $smessage = $this->messenger->sendUserMessage('registration.rejected','registrationrejected',$user);
+            $smessage = $this->messenger->sendUserMessage('registration.rejected','registrationrejected',$fixer);
             return $this->redirect("/admin/user/".$uid);
         }
         return $this->redirect("/admin/user/".$uid);
@@ -267,28 +285,28 @@ class RegistrationController extends AbstractController
     public function remotereregister($uid, $code, Request $request)
     {
         $lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        # $lang = $user->getLocale();
-        $usercode = $user->getRegistrationCode();
-        $temp = $user->hasRole("ROLE_APWC");
-        if($code == $usercode && $temp)
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        # $lang = $fixer->getLocale();
+        $fixercode = $fixer->getRegistrationCode();
+        $temp = $fixer->hasRole("ROLE_APWC");
+        if($code == $fixercode && $temp)
         {
-            $user->setLastlogin( new \DateTime());
-            $user->updateRole("reregistration");
+            $fixer->setLastlogin( new \DateTime());
+            $fixer->updateRole("reregistration");
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
+            $entityManager->persist($fixer);
             $entityManager->flush();
             //message to user
-            $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$user);
+            $smessage = $this->messenger->sendUserMessage('email.confirmed','emailvalidationcomplete',$fixer);
             // message to admin
-            $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$user,$lang);
+            $amessage = $this->messenger->sendAdminMessage('approbation.request','approbationrequest',$fixer,$lang);
             //clear token
-            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $token = new UsernamePasswordToken($fixer, null, 'main', $fixer->getRoles());
             $this->get('security.token_storage')->setToken($token);
             $this->get('session')->set('_security_main', serialize($token));
             return $this->render('registration/done.html.twig',
             array(
-                'user' => $user ,
+                'user' => $fixer ,
                 'heading'=>'email.confirmed',
                 'messages'=>'',
 
@@ -299,8 +317,8 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/reregfail.html.twig',
         array(
-            'username' => $user->getUsername() ,
-            'email' => $user->getEmail()
+            'username' => $fixer->getUsername() ,
+            'email' => $fixer->getEmail()
 
             ));
     }
@@ -313,13 +331,13 @@ class RegistrationController extends AbstractController
 
     public function resetpasswordrequest(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user = new User();
-        $form = $this->createForm(ResetForm::class, $user);
+
+        $fixer = new User();
+        $form = $this->createForm(ResetForm::class, $fixer);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()  && $this->captchaverify($request->get('g-recaptcha-response')) )
         {
-            $email = $user->getEmail();
+            $email = $fixer->getEmail();
             $ouser =   $this->getDoctrine()->getRepository("App:User")->loadUserbyUsername($email);
             if(!$ouser)
             {
@@ -360,19 +378,19 @@ class RegistrationController extends AbstractController
 
     public function remotechangepassword($uid, $code, Request $request)
     {
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        $usercode = $user->getRegistrationCode();
-        $chpw = $user->hasRole("ROLE_APWC");
-        if($code == $usercode && $chpw)
+
+        $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+        $fixercode = $fixer->getRegistrationCode();
+        $chpw = $fixer->hasRole("ROLE_APWC");
+        if($code == $fixercode && $chpw)
         {
-            $user->setLastlogin( new \DateTime());
-            $user->updateRole("passwordchanged");
+            $fixer->setLastlogin( new \DateTime());
+            $fixer->updateRole("passwordchanged");
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
+            $entityManager->persist($fixer);
             $entityManager->flush();
-            $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-            if (!$user) {
+            $fixer =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
+            if (!$fixer) {
                 return $this->render(
                     'registration/reset.html.twig',
                     array('form' => $form->createView() ,
@@ -381,18 +399,18 @@ class RegistrationController extends AbstractController
                     );
             } else {
 
-                $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+                $token = new UsernamePasswordToken($fixer, null, 'main', $fixer->getRoles());
                 $this->get('security.token_storage')->setToken($token);
                 $this->get('session')->set('_security_main', serialize($token));
-                return $this->redirect("/".$user->getlang()."/userpassword/".$uid);
+                return $this->redirect("/".$fixer->getlang()."/userpassword/".$uid);
             }
 
         }
 
         return $this->render('registration/reregfail.html.twig',
         array(
-            'username' => $user->getUsername() ,
-            'email' => $user->getEmail()
+            'username' => $fixer->getUsername() ,
+            'email' => $fixer->getEmail()
 
             ));
     }

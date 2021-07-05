@@ -1,0 +1,61 @@
+{# views/repair/script.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+{{ parent() }}
+<link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+<link href="{{ asset('/css/button.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">Edit Repair:</div>
+  <div class="title" >{{repair.name}}({{repair.repairid}})</div>
+    <div><a class="button right"  href="/repair/edit/{{repair.repairid}}/client">EDIT</a></div>
+  <div class="button"> <a class="button" href ="/" >{{'back'}} </a> </div>
+</div>
+{% endblock %}
+
+{% block middle %}
+<div id="middle" >
+  <div id="repairedit"  >
+    <div>
+      {% for key,astep in script %}
+ {%  if true %}
+ {% set adialog = dialogs | getelement(astep) %}
+ {% set reply = replies | getelement(astep) %}
+   {% if adialog %}
+   {% dump(adialog) %}
+   {% if (adialog.Daccess == access) or ( adialog.Daccess == 'PUBLIC')  %}
+      <div  class="mastercontainer">
+        <div class="container">
+          <div class="dialogname"> {{ adialog.Dlabel }}</div>
+          {% dump(adialog) %}
+        </div>
+        <div class= "containerr">
+          <div class="dialogfields">
+            {% if reply.Dialogreply is defined %}
+           {% set replylist = reply.Dialogreply | jsondecode  %}
+           {% dump(replylist) %}
+           {% for key, value in replylist|cast_to_array %}
+             {% if value is empty %}
+             <div class="replyfield red">{{key}}: {{value}}</div>
+             {% else %}
+             <div class="replyfield">{{key}}: {{value}}</div>
+             {% endif %}
+           {% endfor %}
+           {% endif %}
+          </div>
+       </div>
+
+      </div>
+      {% endif %}
+   {% endif %}
+   {% endif %}
+ {% endfor %}
+{% endblock %}

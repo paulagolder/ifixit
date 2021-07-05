@@ -9,20 +9,35 @@
 
 {% block header %}
 <div class="heading row">
+{% if fixer %}
+<div class="label">Welcome to IFIXIT : Fixer {{fixer.nickname}}</div>
+{% else %}
+{% if repairkey %}
+<div class="label">Welcome back to IFIXIT </div>
+{% else %}
 <div class="label">Welcome to IFIXIT </div>
-<div class="label">Today is : {{ date |date("m/d/Y") }}</div>
-<div class="button  right"> <a class="button" href = "/fixers" >Fixers</a> </div>
+{% endif %}
+<div class="button  right"> <a class="button" href = "/fixer/login" >Fixer Login..</a> </div>
+{% endif %}
+
+
 </div>
 {% endblock %}
 {% block middle %}
 {% for arepair in repairs  %}
- <div class="row">
- <a class="button" href = "/repair/edit/{{arepair.repairid}}" >{{ arepair.name }}</a>
+ <div class="repair row">
+ <div> {{arepair.name}} </div>
+
+{% if repairkey == arepair.repairkey %}
+<a class="button" href = "/repair/edit/{{arepair.repairid}}" >Edit</a>
+{% else %}
+<a class="button" href = "/repair/show/{{arepair.repairid}}" >View</a>
+{% endif %}
 
  </div>
 
 {% endfor %}
 
 
- <div class="button  right"> <a class="button" href = "/repair/edit" >Post New Repair</a> </div>
+ <div class="button  right"> <a class="button" href = "/repair/new" >Post New Repair</a> </div>
 {% endblock %}

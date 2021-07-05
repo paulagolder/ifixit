@@ -1,0 +1,46 @@
+{# views/message/template/emailfull.html.twig #}
+
+<html>
+<style>
+div.bodytext { font-size:12pt; color:black;  }
+div.link { font-size:12pt;  text-align: center;  }
+div.messageheading div.label { font-size:14pt; text-align: center; text-weight : bold; color: black }
+
+div.mailmessage{background-color:#afc0db;}
+div.mailfooter table {width : 100%;background-color: #98b9ed;color:white;}
+div.mailheader table {width : 100%;background-color: #98b9ed;color:white;}
+div.mailfooter table tr td.middle {color:white;}
+div.mailfooter table tr td {text-align:center;width:33%;}
+div.mailfooter a, a:visited, a:hover, a:active {
+  color: blue;
+}
+div.mailheader table tr td.middle {text-align:center;width:33%;}
+div.mailheader table tr td.right{text-align:right;width:33%;}
+div.mailmessage table {width:100%;}
+div.mailmessage table tr td.label{color:yellow; width:20em;}
+div.mailmessage table tr td.title{color:blue;}
+div.body { padding:3em; }
+</style>
+
+<div id= "usermessage" >
+
+
+</div class="header">
+{{header | raw}}
+</div>
+<div class="mailmessage">
+<table  >
+<tr><td class="label" >Sent To</td><td class="title" > {{message.destination.name}}</td></tr>
+<tr><td class="label" >Date Sent</td><td class="title"> {{ message.date  | date("Y-m-d H:i:s")}}</td></tr>
+
+    <tr><td class="label" >Sent by</td><td class="title"> {{ message.sender.name }} ({{message.sender.email}}) </td></tr>
+
+
+</table>
+<div class="body">
+{{ body | raw }}
+</div>
+</div class="footer">
+{{footer | raw}}
+</div>
+</html>

@@ -1,0 +1,22 @@
+{# templates/main/overview.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+      {{ parent() }}
+   <link href="{{ asset('/css/repair.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+<div class="heading row">
+<div class="label"> IFIXIT - user message to : {{user.Nickname}}</div>
+<div class="button  right"> <a class="button" href = "{{continue}}" >Continue</a> </div>
+</div>
+{% endblock %}
+{% block middle %}
+<div class= "message">
+{% for aline in messages %}
+<div class="line">{{aline}}</div>
+{% endfor %}
+ </div>
+{% endblock %}

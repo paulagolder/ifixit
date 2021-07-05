@@ -69,16 +69,14 @@ div.heading div.value
 
 div.subheading.row
 {
-  xbackground-color :#a1e697;
-  xheight :1em;
-  font-size: 0.8em;
-  padding:0.1em;
+  font-size: 1.2em;
+  padding:1em;
 }
 
 
 div.subheading.row div.label {
   color : green;
-  xfont-size : 1.2em;
+  font-size : 1.2em;
   padding-right : 1em;
 }
 
@@ -109,11 +107,9 @@ div.row div.name
 div.message
 {
   background-color :#a1e697;
-  height :1em;
-  font-size: 0.5em;
+  font-size: 1em;
   padding:0.1em;
   color: red;
-  width : 25em;
 }
 
 

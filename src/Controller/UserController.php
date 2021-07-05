@@ -26,7 +26,7 @@ use App\Controller\LinkrefController;
 class UserController extends AbstractController
 {
 
-    private $lang="fr";
+
     private $mylib;
     private $requestStack ;
     private $trans;
@@ -34,17 +34,17 @@ class UserController extends AbstractController
     private $encoderFactory;
 
 
-    public function __construct( MyLibrary $mylib ,RequestStack $request_stack,EncoderFactoryInterface $encoderFactory,TranslatorInterface $translator)
+    public function __construct( MyLibrary $mylib ,RequestStack $request_stack,EncoderFactoryInterface $encoderFactory)
     {
         $this->mylib = $mylib;
         $this->requestStack = $request_stack;
         $this->encoderFactory = $encoderFactory;
-        $this->trans =$translator;
+
     }
 
     public function Showall()
     {
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
+
         $fusers = $this->getDoctrine()->getRepository("App:User")->findAll();
         if (!$fusers) {
             return $this->render('person/showall.html.twig', [ 'message' =>  'People not Found',]);
@@ -55,7 +55,6 @@ class UserController extends AbstractController
         }
         return $this->render('user/showall.html.twig',
         [
-        'lang' => $this->lang,
         'message' =>  '' ,
         'heading' => 'users',
         'fusers'=> $fusers,
@@ -157,55 +156,8 @@ class UserController extends AbstractController
             ));
     }
 
-    public function remotechangepassword($uid, $code)
-    {
-        $user =   $this->getDoctrine()->getRepository("App:User")->findOne($uid);
-        if(!$user)  return $this->redirect("/".$this->lang."/login");
-
-        $request = $this->requestStack->getCurrentRequest();
-
-        $encoder = $this->encoderFactory->getEncoder($user);
-        $tpass= $user->getEmail();
 
 
-        $usercode = $user->getRegistrationCode();
-        $temp = $user->hasRole("ROLE_APWC");
-        if( $temp )
-        {
-        if($code == $usercode )
-        {
-            $form = $this->createForm(UserPasswordForm::class, $user);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid())
-            {
-                $user->updateRole("passwordchanged");
-                $entityManager = $this->getDoctrine()->getManager();
-                $plainpassword = $user->getPlainPassword();
-                $hashpassword = $encoder->encodePassword($plainpassword,null);
-                $user->setPassword($hashpassword);
-                $entityManager->persist($user);
-                $entityManager->flush();
-                $smessage = $this->get('message_service')->sendConfidentialUserMessage('changepass.success','reset.password.success',$user);
-                $message = array();
-                $message[] = 'reset.password.success';
-                return $this->render('registration/done.html.twig',
-                array(
-                    'user' => $user ,
-                    'messages'=>$message,
-                    'heading'=> 'changepass.success',
-                    ));
-            }
-
-            return $this->render('user/userpassword.html.twig', array(
-                'form' => $form->createView(),
-                'password' => $user->getPassword(),
-                'returnlink'=> "/".$this->lang."/user/".$uid,
-                ));
-        }
-        return $this->redirect('/accueil/message/'."password.change.failed");
-        }
-        return $this->redirect('/accueil/message/'."password.already.changed");
-    }
 
     public function userRereg($uid)
     {
@@ -220,68 +172,8 @@ class UserController extends AbstractController
         return $this->redirect("/admin/user/".$uid);
     }
 
-    public function bulkUserRereg()
-    {
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
-
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-        $destinataires = $session->get('selectedusers');
-        $userlist = explode(",",$destinataires);
-        $numbertosend= count($userlist) - 1;
-        return $this->render('user/bulkrereg.html.twig', array(
-            'lang'=>$this->lang,
-            'destinataires' =>$destinataires,
-            'numbertosend'=>$numbertosend,
-            'returnlink'=>'/admin/user/search',
-            'actionlink'=>'/admin/user/bulkrereg/send/',
-            ));
-    }
 
 
-    public function bulkUserReregSend()
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $session = $request->getSession();
-        $destinataires = $session->get('selectedusers');
-        $userlist = explode(",",$destinataires);
-
-        foreach($userlist as $uid)
-        {
-            $user =  $this->getDoctrine()->getRepository('App:User')->findOne($uid);
-            if($user)
-            {
-                $this-> SendUserRereg($user->getUserid());
-            }
-        }
-
-        return $this->redirect("/admin/user/search");
-    }
-
-    public function SendUserRereg($uid)
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $user = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
-        $user->setLastlogin( new \DateTime());
-        $user->updateRole("forcereregistration");
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
-        $entityManager->flush();
-        $smessage = $this->get('message_service')->sendConfidentialUserMessage('reregister','rereg.notice',$user);
-    }
-
-    public function userDereg($uid)
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $user = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
-        $user->setLastlogin( new \DateTime());
-        $user->updateRole("deregistration");
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
-        $entityManager->flush();
-        $smessage = $this->get('message_service')->sendConfidentialUserMessage('deregister','dereg.notice',$user);
-        return $this->redirect("/".$fuser->getLang()."/user/".$uid);
-    }
 
 
 
@@ -291,7 +183,7 @@ class UserController extends AbstractController
         $user = $this->getUser();
         if(!$user) return $this->redirect("/".$this->lang."/loginx");
         if($uid!= $user->getUserId())  return $this->redirect("/".$this->lang."/person/all");
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
+
         $fuser = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
         $email= $fuser->getEmail();
         $messages = $this->getDoctrine()->getRepository('App:Message')->findbyname($fuser->getUserName());
@@ -306,7 +198,7 @@ class UserController extends AbstractController
     public function showone($uid)
     {
 
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
+
         $fuser = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
         $email= $fuser->getEmail();
 
@@ -337,50 +229,13 @@ class UserController extends AbstractController
     }
 
 
-    public function viewMessage($uid,$mid)
-    {
-        $user = $this->getUser();
-        if($uid!= $user->getUserId())  return $this->redirect("/".$this->lang."/user/".$uid);
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
-        $fuser = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
-        $email= $fuser->getEmail();
 
-        $message = $this->getDoctrine()->getRepository('App:Message')->find($mid);
-        return $this->render('user/showmessage.html.twig', array(
-            'lang'=>$this->lang,
-            'user' => $fuser,
-            'message' =>$message,
-            'returnlink'=> "/".$this->lang."/user/".$uid,
-            ));
-    }
-
-    public function deletemessage($uid,$mid)
-    {
-        $user = $this->getUser();
-        if($uid!= $user->getUserId())  return $this->redirect("/".$this->lang."/person/all");
-        $this->getDoctrine()->getRepository('App:Message')->delete($mid);
-        return $this->redirect("/".$this->lang."/user/".$uid);
-    }
-
-    public function deleteallmessages($uid)
-    {
-        $user = $this->getDoctrine()->getRepository('App:User')->findOne($uid);
-        $this->getDoctrine()->getRepository('App:Message')->deleteallusermessages($user->getUsername());
-        return $this->redirect("/admin/user/".$uid);
-    }
-
-    public function admindeletemessage($uid,$mid)
-    {
-        $user = $this->getUser();
-        $this->getDoctrine()->getRepository('App:Message')->delete($mid);
-        return $this->redirect("/admin/user/".$uid);
-    }
 
     public function UserSearch($search, Request $request)
     {
         $selectedusers="";
         $message="";
-        $this->lang = $this->requestStack->getCurrentRequest()->getLocale();
+
         $usersforapproval = $this->getDoctrine()->getRepository("App:User")->findSearch("%ROLE_AADA%");
         if(isset($_GET['searchfield']))
         {

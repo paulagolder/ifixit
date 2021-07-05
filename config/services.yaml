@@ -2,36 +2,27 @@
 
 parameters:
 
-  pdf-function: true
-  location-path: "/fr/location/"
   recaptcha_key: '%env(resolve:RECAPTCHA_KEY)%'
   recaptcha_secret: '%env(resolve:RECAPTCHA_SECRET)%'
-  maxlistuser: 20
-  maxlistadmin: 100
-  maxrecentchanges: 20
-  defaultcontent: 203
-  default_locale: fr
-  kernel.default_locale: fr
-  languages: ["fr", "en"]
-  version-name: "FFLSAS-20"
+
+  version-name: "IFIXIT"
   admin-name: '%env(resolve:ADMIN_NAME)%'
   admin-email: '%env(resolve:ADMIN_EMAIL)%'
   testemail: '%env(resolve:TESTEMAIL)%'
   administratorsemails: '%env(resolve:ADMINISTRATORSEMAILS)%'
-  new-images-folder: '%kernel.project_dir%/public/newimages/'
-  new-images-path: '/newimages/'
-  old-images-path: "/oldimages/"
-  old-images-folder: "%kernel.project_dir%/public/oldimages/"
-    #external-newimages: "http://fflsas.org/web/newimages/"
-  kml-folder-long: '%kernel.project_dir%/public/kml/'
-  kml-folder: '/kml/'
+
   base-url: '%env(resolve:BASE_URL)%'
+
+  repair-images-folder: '%kernel.project_dir%/public/repair/images/'
+  upload_dir: '../var/uploads'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $repairimagesfolder: '%repair-images-folder%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -53,15 +44,9 @@ services:
     #    class:
     App\Service\MyLibrary:
         arguments:
-           #$newimagepath : '%new-images-folder%'
-           $oldimagespath: '%old-images-path%'
-           $newimagespath : '%new-images-path%'
 
 
-    linkref_service:
-         class: App\Controller\LinkrefController
-         calls:
-            - [setContainer, ["@service_container"]]
+
 
 
     App\Service\message_service:
@@ -70,12 +55,9 @@ services:
             - [setContainer, ["@service_container"]]
 
 
-
     App\Service\FileUploader:
         arguments:
-            $targetDir: '%new-images-folder%'
-
-
+            $targetDirectory: '%repair-images-folder%'
 
 
 

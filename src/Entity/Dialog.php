@@ -40,6 +40,12 @@ class Dialog
      */
     private $Dnext;
 
+
+        /**
+     * @ORM\Column(name="daccess",type="string", length=20)
+     */
+    private $Daccess;
+
         /**
      * @ORM\Column(name="dfields",type="json_array", length=500)
      */
@@ -94,6 +100,17 @@ class Dialog
     public function setDhelp(string $text)
     {
         $this->Dhelp = $text;
+        return $this;
+    }
+
+       public function getDaccess()
+    {
+        return $this->Daccess;
+    }
+
+    public function setDaccess(string $text)
+    {
+        $this->Daccess = $text;
         return $this;
     }
 

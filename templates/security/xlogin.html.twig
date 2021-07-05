@@ -1,0 +1,71 @@
+{# views/security/login.html.twig #}
+
+ {% set locale =  app.request.getLocale() | lower %}
+
+{% extends 'base.html.twig' %}
+
+
+
+{% block stylesheets %}
+{{ parent() }}
+<link href="{{ asset('css/fixer/login.css') }}" rel="stylesheet" />
+<link href="{{ asset('/css/button.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
+{% block header %}
+<div class="heading  row" >
+  <div class="label">Fixer Login:</div>
+
+  <div class="button  right"> <a class="button" href ="/" >Back</a> </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block middle %}
+<div id="middle" >
+{% if error is defined and error %}
+    <div id="loginerror" >{{ error.messageKey }}</div>
+{% endif %}
+<div id="loginform" >
+
+<form action="{{ path('login') }}" method="post">
+<div class="heading" >Enter Login details</div>
+<div class="form">
+<div class="username" >
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="_username" value="{{ last_username }}" />
+</div>
+<div class="password">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="_password" />
+</div>
+</div>
+    {#
+        If you want to control the URL the user
+        is redirected to on success (more details below)
+        <input type="hidden" name="_target_path" value="/account" />
+    #}
+
+    <button type="submit">login</button>
+</form>
+
+
+
+</div>
+
+<div class="heading row">
+ <div class="label" >Forgotten Password?</div>
+<div class="button" > <a class="button"  href="/resetpassword" >Reset Password</a></div>
+</div>
+<div class="heading row">
+    <div class="label" >Not Registered?</div>
+    <div class="utton"  > <a class="button" href="/register" >Register</a></div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -5,12 +5,21 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Reply;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 use App\Form\Type\FixerForm;
 use App\Entity\Repair;
 use App\Entity\Track;
-use App\Entity\Fixer;
+use App\Entity\User;
 use App\Entity\Dialogreply;
+use App\Service\MyLibrary;
 
 class FixerController extends AbstractController
 {
@@ -31,7 +40,37 @@ class FixerController extends AbstractController
   }
 
 
+  public function fixerview($fxid)
+  {
 
+    $request = $this->requestStack->getCurrentRequest();
+    if($fxid)
+    {
+      $afixer = $this->getDoctrine()->getRepository("App:User")->findOne($fxid);
+      $repairs= $this->getDoctrine()->getRepository("App:Repair")->findCurrent($fxid);
+    }
+   dump($repairs);
+    return $this->render('fixer/fixersummary.html.twig', array(
+
+      'fixer'=>$afixer,
+      'repairs'=>$repairs,
+      'returnlink'=>"/",
+      ));
+  }
+
+  public function overview($fxid)
+  {
+      $afixer = $this->getDoctrine()->getRepository("App:User")->findOne($fxid);
+      $following= $this->getDoctrine()->getRepository("App:Repair")->findCurrent($fxid);
+
+    dump($following);
+    return $this->render('fixer/overview.html.twig', array(
+
+      'fixer'=>$afixer,
+      'tracks'=>$following,
+      'returnlink'=>"/",
+      ));
+  }
 
   public function view($fxid,$rpid)
   {
@@ -43,7 +82,6 @@ class FixerController extends AbstractController
       $script[] = explode(",",$arepair->getScript());
       $replies = $this->getDoctrine()->getRepository("App:Dialogreply")->findAllforRepair($rpid);
     }
-
 
     return $this->render('fixer/view.html.twig', array(
       "dialogs"=>$dialogs,
@@ -122,6 +160,11 @@ class FixerController extends AbstractController
     return $this->redirectToRoute('repair_edit', ['rpid' => $rpid,'step'=>$step,]);
   }
 
+  public function fixernew()
+  {
+    return fixeredit(0);
+  }
+
 
   public function fixeredit($fxid)
   {
@@ -138,7 +181,7 @@ class FixerController extends AbstractController
       $fxid = $fixer->getFixerId();
     }
     $request = $this->requestStack->getCurrentRequest();
-    $fixer = $this->getDoctrine()->getRepository('App:Fixer')->findOne($fxid);
+    $fixer = $this->getDoctrine()->getRepository('App:User')->findOne($fxid);
     $encoder = $this->encoderFactory->getEncoder($fixer);
     $tpass= $fixer->getEmail();
 
@@ -148,12 +191,12 @@ class FixerController extends AbstractController
     if ($form->isSubmitted() && $form->isValid())
     {
       $entityManager = $this->getDoctrine()->getManager();
-      $plainpassword = $fuser->getPlainPassword();
+      $plainpassword = $fixer->getPlainPassword();
       $hashpassword = $encoder->encodePassword($plainpassword,null);
       $fixer->setPassword($hashpassword);
       $entityManager->persist($fixer);
       $entityManager->flush();
-      return $this->redirect("/".$this->lang."/fixer/".$fxid);
+      return $this->redirect("/fixer/".$fxid);
     }
 
     $password = $fixer->getPassword();
@@ -165,5 +208,60 @@ class FixerController extends AbstractController
       ));
   }
 
+
+  public function login_action()
+  {
+    $request = $this->requestStack->getCurrentRequest();
+    $email = $_POST['email'];
+    $plainpassword = $_POST['password'];
+    dump($plainpassword);
+    dump($email);
+    $user = $this->getDoctrine()->getRepository('App:User')->findFixerByEmail($email);
+    if($user)
+    {
+      $encoder = $this->encoderFactory->getEncoder($user);
+      $pw = $user->getPassword();
+      dump($pw);
+
+      if($encoder->isPasswordValid($pw, $plainpassword, null))
+      {
+        dump(" password matches");
+        $entityManager = $this->getDoctrine()->getManager();
+        $fixerkey =  date('YmdHis');
+        $user->setFixerkey($fixerkey);
+        $user->setLastlogin( new \DateTime());
+        $entityManager->persist($user);
+        $entityManager->flush();
+        dump($user);
+        $cookie = new Cookie
+        (
+          'fixerkey',	// Cookie name.
+          $fixerkey,	// Cookie value.
+          time() + ( 6 * 30 * 24 * 60 * 60)	// Expires 1 month.
+          );
+          $res = new Response();
+          $res->headers->setCookie( $cookie );
+          $res->send();
+        return $this->redirect("/fixer/overview/".$user->getID());
+      }
+      else
+      {
+        $this->addFlash('flash-message'," Login failed ");
+        return $this->render('fixer/login.html.twig', array('returnlink'=> "/", ));
+      }
+    }
+    else
+    {
+      $this->addFlash('flash-message'," Email unknown ");
+      return $this->render('fixer/login.html.twig', array('returnlink'=> "/", ));
+    }
+
+  }
+
+
+  public function login()
+  {
+    return $this->render('fixer/login.html.twig', array('returnlink'=> "/", ));
+  }
 
 }
